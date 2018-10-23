@@ -54,7 +54,7 @@ ui <- dashboardPage(
                             textInput("new_analysis_name", "Analysis Name")
                         ),
                         actionButton("new_analysis_save_button", "Register",
-                                     style="font-size:2vh;height:4vh;margin-top:2%;width:25%;margin-left:5%"),
+                                     style="height:4vh;margin-top:2%;width:25%;margin-left:5%"),
                         box
                         (
                             width = 6,

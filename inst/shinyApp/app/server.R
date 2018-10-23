@@ -1,7 +1,9 @@
 library(shiny)
 library(shinydashboard)
 library(flowCore)
+library(gplots)
 library(shinyjs)
+library(shinyDND)
 
 server <- function(input, output, session)
 {
@@ -512,6 +514,15 @@ server <- function(input, output, session)
                     progress.bar$inc(1, detail="Analysis Added")
                 }
             }
+        }
+        
+        updateTextInput(session, "new_analysis_name", "Analysis Name", value="")
+        updateSelectInput(session, "new_analysis_column", selected = NULL)
+        updateSelectInput(session, "new_analysis_markers", selected = NULL)
+        for(i in 1:length(global.values$analyses.parameters))
+        {
+            global.values$analyses.parameters[[i]] <<- NA
+            removeUI(paste0("#param_",i))
         }
         
         progress.bar$set(message="Done", value = 1)

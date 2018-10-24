@@ -16,7 +16,8 @@ server <- function(input, output, session)
         fcs.files = NULL,
         fcs.files.ui.colnames = NULL,
         modified.files = NULL,
-        analyses.parameters = NULL
+        analyses.parameters = NULL,
+        file.info = NULL
     )
     
     write.enriched.FCS <- function(fcs, fcs.path)
@@ -119,6 +120,11 @@ server <- function(input, output, session)
                  names(global.values$fcs.files.ui.colnames)[1] <<- fcs.name
                  global.values$modified.files[[1]] <<- T
                  
+                 global.values$file.info <<- matrix(nrow=1,ncol=3)
+                 global.values$file.info[1,] <<- c(fcs.name, trunc(file.size(f)/1024/1024*1000)/1000, ncol(x))
+                 colnames(global.values$file.info) <<- c("Name", "Size(Mo)", "Nmb param")
+                 print(global.values$file.info)
+                 
                  progress.bar$inc(1/length(temp.files), detail=paste0("File ", f, " loaded"))
              })
          }
@@ -128,9 +134,23 @@ server <- function(input, output, session)
              shinyjs::enable("files_sel")
              shinyjs::enable("files_dl")
          })
-         progress.bar$set(message="Done", value = 1)
          
+         progress.bar$set(message="Done", value = 1) 
     })
+    
+    observe(#SHOW/HIDE FILE INFORMATION)
+    {
+        if(!is.null(global.values$file.info))
+        {
+            shinyjs::show("file_info")
+        }
+        else
+        {
+            shinyjs::hide("file_info")
+        }
+    })
+    
+    output$file_info <- shiny::renderTable(global.values$file.info)
     
     observe(#LOAD FILES INFORMATION
     {
@@ -223,7 +243,7 @@ server <- function(input, output, session)
                                                  selectInput(paste0("t_1_3_",f,"_2_b_",k,"_run"),"Select analysis",choices = available.runs),
                                                  box
                                                  (
-                                                     title = "Markers",id=paste0("t_1_3_",f,"_2_b_",k,"_mark"),style="height:17vh;overflow:auto",
+                                                     title = "Markers",id=paste0("t_1_3_",f,"_2_b_",k,"_mark"),style="max-height:17vh;overflow:auto",
                                                      div
                                                      (
                                                          id=paste0("t_1_3_",f,"_2_b_",k,"_mark_content") 
@@ -231,7 +251,7 @@ server <- function(input, output, session)
                                                  ),
                                                  box
                                                  (
-                                                     title = "Parameters",id=paste0("t_1_3_",f,"_2_b_",k,"_param"),style="height:17vh;overflow:auto",
+                                                     title = "Parameters",id=paste0("t_1_3_",f,"_2_b_",k,"_param"),style="max-height:17vh;overflow:auto",
                                                      div
                                                      (
                                                          id=paste0("t_1_3_",f,"_2_b_",k,"_param_content")
@@ -327,7 +347,7 @@ server <- function(input, output, session)
                                             par.val <- strsplit(curr.parameters[[l]][m],"-")[[1]][2]
                                             insertUI(paste0("#t_1_3_",f,"_2_b_",k,"_param_content"),
                                                      "beforeEnd",
-                                                     h5(paste0(par.name,": ",par.val))
+                                                     h5(paste0(par.name," = ",par.val))
                                             )
                                         })
                                     }

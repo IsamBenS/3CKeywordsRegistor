@@ -31,17 +31,30 @@ ui <- dashboardPage(
         fluidRow
         (
             id="main_fr",
-            box
+            tabBox
             (
-                id="registered_analyses_box", collapsible = T, width=5, style="padding-right:4%",title="Registered Analyses", 
-                fluidRow
+                width=5,
+                tabPanel
                 (
-                    id="registered_analyses_fr"
+                    "File information", width=12, style="padding-right:4%;max-height:10vh",
+                    fluidRow
+                    (
+                        shinyjs::hidden(tableOutput("file_info")),
+                        style="overflow:auto;margin-left:2vw"
+                    )
+                ),
+                tabPanel
+                (
+                    id="registered_analyses_box", collapsible = T, width=12, style="padding-right:4%",title="Registered Analyses",
+                    fluidRow
+                    (
+                        id="registered_analyses_fr"
+                    )
                 )
             ),
             box
             (
-                id="new_analysis_box", collapsible = T, width=7, style="padding-right:4%",title="Register New Analysis", 
+                "Register New Analysis", id="new_analysis_box", collapsible = T, width=7, style="margin-right:4%", 
                 fluidRow
                 (
                     id="new_analysis_fr",
